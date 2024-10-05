@@ -1,17 +1,21 @@
-import { Form } from '@remix-run/react';
+import { json } from '@remix-run/node';
+import { Form, useLoaderData } from '@remix-run/react';
 import type { FunctionComponent } from 'react';
 
+import type { LoaderFunctionArgs } from '@remix-run/node';
+import invariant from 'tiny-invariant';
+
+import { getContact } from '../data';
 import type { ContactRecord } from '../data';
 
+export const loader = async ({ params }: LoaderFunctionArgs) => {
+  invariant(params.contactId, 'No contactId provided');
+  const contact = await getContact(params.contactId);
+  return json({ contact });
+};
+
 export default function Contact() {
-  const contact = {
-    first: 'Your',
-    last: 'Name',
-    avatar: 'https://avatar.iran.liara.run/public',
-    twitter: 'some_handle',
-    notes: 'some note',
-    favorite: true,
-  };
+  const { contact } = useLoaderData<{ contact: ContactRecord }>();
 
   return (
     <div id="contact">
